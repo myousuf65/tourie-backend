@@ -33,24 +33,17 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-//                        .requestMatchers("/private/**").authenticated()
+                        .requestMatchers("/tour/all").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                )
-                .securityContext(secContext -> secContext
-                        .securityContextRepository(securityContextRepository())
                 )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         return http.build();
     }
 
-    @Bean
-    public SecurityContextRepository securityContextRepository() {
-        return new HttpSessionSecurityContextRepository();
-    }
 
     @Bean
     public AuthenticationManager authenticationManager() {
@@ -64,7 +57,10 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of(
+                "http://127.0.0.1:3000",
+                "https://96f7-210-177-86-234.ngrok-free.app"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
         configuration.setAllowCredentials(true);

@@ -7,4 +7,5 @@ import xyz.yousuf.tourie.entity.UserModel;
 @Repository
 public interface UserRepository extends JpaRepository<UserModel, Long> {
     UserModel findByName(String username);
+    Boolean existsByName(String name);
 }
