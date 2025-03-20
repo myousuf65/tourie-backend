@@ -4,11 +4,12 @@ package xyz.yousuf.tourie.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import xyz.yousuf.tourie.dto.DeleteTourDto;
-import xyz.yousuf.tourie.dto.TourDto;
-import xyz.yousuf.tourie.dto.UpdateTourDto;
+import xyz.yousuf.tourie.dto.*;
+import xyz.yousuf.tourie.entity.Booking;
 import xyz.yousuf.tourie.entity.Tour;
+import xyz.yousuf.tourie.repository.BookingRespository;
 import xyz.yousuf.tourie.repository.UserRepository;
+import xyz.yousuf.tourie.service.BookingService;
 import xyz.yousuf.tourie.service.TourService;
 
 import java.util.List;
@@ -24,6 +25,10 @@ public class TourController {
     TourService tourService;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private BookingRespository bookingRespository;
+    @Autowired
+    private BookingService bookingService;
 
     @PostMapping("/upload")
     ResponseEntity<?> uploadTour(@RequestBody TourDto tourInfo){
@@ -50,7 +55,7 @@ public class TourController {
     }
 
     @GetMapping("/get/{id}")
-    ResponseEntity<?> getById(@PathVariable Long id){
+    ResponseEntity<?> getById(@PathVariable Long id) {
         Optional<Tour> tour = tourService.getById(id);
         return ResponseEntity.ok(tour);
     }
@@ -60,6 +65,24 @@ public class TourController {
         Tour tour = tourService.updateTour(tourInfo);
         return ResponseEntity.ok(tour);
     }
+
+    @PostMapping("/rate")
+    List<Booking> rateTour(@RequestBody RateTourDto rateTourDto){
+        List<Booking> allBookings = bookingService.rateBooking(rateTourDto);
+        return allBookings;
+    }
+
+
+    @GetMapping("/getratings/{tourId}")
+    List<Booking> getRatings(@PathVariable Long tourId){
+        List<Booking> allBooking = bookingService.getRatings(tourId);
+        return allBooking;
+    }
+
+
+
+
+
 
 
 

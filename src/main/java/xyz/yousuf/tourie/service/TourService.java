@@ -4,10 +4,13 @@ package xyz.yousuf.tourie.service;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import xyz.yousuf.tourie.dto.BookTourDto;
 import xyz.yousuf.tourie.dto.DeleteTourDto;
 import xyz.yousuf.tourie.dto.TourDto;
+import xyz.yousuf.tourie.entity.Booking;
 import xyz.yousuf.tourie.entity.Tour;
 import xyz.yousuf.tourie.entity.UserModel;
+import xyz.yousuf.tourie.repository.BookingRespository;
 import xyz.yousuf.tourie.repository.TourRepository;
 import xyz.yousuf.tourie.repository.UserRepository;
 
@@ -23,6 +26,9 @@ public class TourService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private BookingRespository bookingRespository;
 
     @Transactional
     public Tour uploadTour(TourDto tourInfo){
@@ -44,13 +50,13 @@ public class TourService {
     }
 
     public List<Tour> getAllTours(){
-        return tourRepository.findAll();
+        return tourRepository.findByIsDeletedFalse();
     }
 
     public List<Tour> getToursByUsername(String username) {
 
         UserModel user = userRepository.findByName(username);
-        return tourRepository.findByUser(user);
+        return tourRepository.findByUserAndIsDeletedFalse(user);
     }
 
     @Transactional
@@ -58,7 +64,13 @@ public class TourService {
         UserModel user = userRepository.findByName(tourInfo.getUsername());
 
         try{
-            tourRepository.deleteById(tourInfo.getTour());
+            Tour tour = tourRepository.findById(tourInfo.getTour())
+                    .orElseThrow(()-> new RuntimeException("Tour not found!!"));
+
+            tour.setDeleted(true);
+            tourRepository.save(tour);
+            tourRepository.flush();
+
         } catch (Exception e) {
             System.out.println(e.toString());
             return "Error" + e.toString();
@@ -88,4 +100,6 @@ public class TourService {
             throw new NoSuchElementException("Tour with ID " + tourInfo.getTourId() + " not found.");
         }
     }
+
+
 }

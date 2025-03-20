@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import xyz.yousuf.tourie.dto.TourDto;
 
 @NoArgsConstructor
@@ -36,9 +38,12 @@ public class Tour {
 
     private String photoUrl;
 
+    private boolean isDeleted;
+
 
     @ManyToOne
     @JoinColumn(referencedColumnName = "id", name = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UserModel user;
 
 }
